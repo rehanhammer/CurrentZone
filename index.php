@@ -54,7 +54,15 @@ include('header.php');
 	?>
 		<div class="col-md-4">
 			<div class="panel panel-default">
-				<div class="panel-heading"><strong>Total Order Value</strong></div>
+				<div class="panel-heading"><strong>Total Order Value(Base Price)</strong></div>
+				<div class="panel-body" align="center">
+					<h1><?php echo count_total_order_value_base($connect); ?></h1>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-4">
+			<div class="panel panel-default">
+				<div class="panel-heading"><strong>Total Order Value(Sale Price)</strong></div>
 				<div class="panel-body" align="center">
 					<h1><?php echo count_total_order_value($connect); ?></h1>
 				</div>

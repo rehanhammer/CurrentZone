@@ -156,6 +156,24 @@ function count_total_product($connect)
 	$statement->execute();
 	return $statement->rowCount();
 }
+function count_total_order_value_base($connect)
+{
+	$query = "
+	SELECT sum(inventory_order_base_price_total) as total_order_value FROM inventory_order 
+	WHERE inventory_order_status = '1' OR inventory_order_status = '2'
+	";
+	if($_SESSION['type'] == 'user')
+	{
+		$query .= ' AND user_id = "'.$_SESSION["user_id"].'"';
+	}
+	$statement = $connect->prepare($query);
+	$statement->execute();
+	$result = $statement->fetchAll();
+	foreach($result as $row)
+	{
+		return number_format($row['total_order_value'], 2);
+	}
+}
 
 function count_total_order_value($connect)
 {
