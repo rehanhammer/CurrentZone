@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 12, 2020 at 02:07 PM
+-- Generation Time: Oct 13, 2020 at 01:58 PM
 -- Server version: 10.4.8-MariaDB
 -- PHP Version: 7.3.11
 
@@ -118,6 +118,13 @@ CREATE TABLE `inventory_order` (
   `inventory_order_edt` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `inventory_order`
+--
+
+INSERT INTO `inventory_order` (`inventory_order_id`, `user_id`, `inventory_order_sale_price_total`, `inventory_order_base_price_total`, `order_cash_received`, `order_cash_receivable`, `inventory_order_date`, `inventory_order_name`, `inventory_order_address`, `payment_mode`, `inventory_order_status`, `inventory_order_sdt`, `inventory_order_udt`, `inventory_order_edt`) VALUES
+(1, 1, 30000.00, 25000.00, 30000.00, 0.00, '2020-10-13', 'saad', 'islamanad', 'cash', 1, '2020-10-13 16:52:41', '2020-10-13 16:54:40', NULL);
+
 -- --------------------------------------------------------
 
 --
@@ -134,6 +141,13 @@ CREATE TABLE `inventory_order_product` (
   `inventory_order_product_sdt` datetime NOT NULL DEFAULT current_timestamp(),
   `inventory_order_product_edt` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `inventory_order_product`
+--
+
+INSERT INTO `inventory_order_product` (`inventory_order_product_id`, `inventory_order_id`, `product_id`, `quantity`, `base_price`, `sale_price`, `inventory_order_product_sdt`, `inventory_order_product_edt`) VALUES
+(1, 1, 1, 100, 250.00, 300.00, '2020-10-13 16:52:41', NULL);
 
 -- --------------------------------------------------------
 
@@ -163,6 +177,13 @@ CREATE TABLE `product` (
   `product_edt` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `product`
+--
+
+INSERT INTO `product` (`product_id`, `category_id`, `brand_id`, `product_name`, `product_description`, `product_quantity`, `product_quantity_remaining`, `product_quantity_sold`, `product_unit`, `product_base_price`, `product_total_amount`, `product_supplier_name`, `product_supplier_contact_no`, `product_enter_by`, `product_status`, `product_date`, `product_sdt`, `product_udt`, `product_edt`) VALUES
+(1, 1, 1, 'CRC 0.5', 'Zaida roshni zaida khushi', 200, 100, 100, 'Dozens', 250.00, 50000.00, 'noob', '03005001289', 1, 'active', '2020-10-12', '2020-10-12 17:49:20', '2020-10-13 16:52:41', NULL);
+
 -- --------------------------------------------------------
 
 --
@@ -173,10 +194,20 @@ CREATE TABLE `tbl_credit_payment_history` (
   `history_id` int(11) NOT NULL,
   `order_id` int(11) NOT NULL,
   `credit_received` double(10,2) NOT NULL DEFAULT 0.00,
-  `history_status` tinyint(4) NOT NULL DEFAULT 2,
+  `history_status` tinyint(4) NOT NULL DEFAULT 1,
   `history_sdt` datetime NOT NULL DEFAULT current_timestamp(),
   `history_udt` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `tbl_credit_payment_history`
+--
+
+INSERT INTO `tbl_credit_payment_history` (`history_id`, `order_id`, `credit_received`, `history_status`, `history_sdt`, `history_udt`) VALUES
+(1, 1, 5000.00, 1, '2020-10-13 16:53:14', NULL),
+(2, 1, 5000.00, 1, '2020-10-13 16:53:54', NULL),
+(3, 1, 8000.00, 1, '2020-10-13 16:54:15', NULL),
+(4, 1, 2000.00, 1, '2020-10-13 16:54:40', NULL);
 
 -- --------------------------------------------------------
 
@@ -267,25 +298,25 @@ ALTER TABLE `category`
 -- AUTO_INCREMENT for table `inventory_order`
 --
 ALTER TABLE `inventory_order`
-  MODIFY `inventory_order_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `inventory_order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `inventory_order_product`
 --
 ALTER TABLE `inventory_order_product`
-  MODIFY `inventory_order_product_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `inventory_order_product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `product`
 --
 ALTER TABLE `product`
-  MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `tbl_credit_payment_history`
 --
 ALTER TABLE `tbl_credit_payment_history`
-  MODIFY `history_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `history_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `user_details`

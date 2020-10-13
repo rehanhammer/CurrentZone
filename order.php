@@ -50,6 +50,7 @@ include('header.php');
 								<th>Order ID</th>
 								<th>Customer Name</th>
 								<th>Total Amount</th>
+								<th>Cash Receivable</th>
 								<th>Payment Mode</th>
 								<th>Order Status</th>
 								<th>Order Date</th>
@@ -73,7 +74,7 @@ include('header.php');
 
 	<div id="orderdetailsModal" class="modal fade">
         <div class="modal-dialog">
-        	<form method="post" id="order_detail_form">
+        	<form method="post" id="order_detail_form" autocomplete="off">
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -93,7 +94,7 @@ include('header.php');
     <div id="orderModal" class="modal fade">
 
     	<div class="modal-dialog1">
-    		<form method="post" id="order_form">
+    		<form method="post" id="order_form" autocomplete="off">
     			<div class="modal-content1">
     				<div class="modal-header">
     					<button type="button" class="close" data-dismiss="modal">&times;</button>

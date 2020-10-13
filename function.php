@@ -156,6 +156,23 @@ function count_total_product($connect)
 	$statement->execute();
 	return $statement->rowCount();
 }
+
+function count_total_order($connect){
+	$query = "
+	SELECT * FROM inventory_order WHERE inventory_order_status='1'";
+	$statement = $connect->prepare($query);
+	$statement->execute();
+	return $statement->rowCount();
+}
+
+function count_total_pending_order($connect){
+	$query = "
+	SELECT * FROM inventory_order WHERE inventory_order_status='2'";
+	$statement = $connect->prepare($query);
+	$statement->execute();
+	return $statement->rowCount();
+}
+
 function count_total_order_value_base($connect)
 {
 	$query = "

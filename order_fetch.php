@@ -77,6 +77,7 @@ foreach($result as $row)
 	$sub_array[] = $row['inventory_order_id'];
 	$sub_array[] = $row['inventory_order_name'];
 	$sub_array[] = $row['inventory_order_sale_price_total'];
+	$sub_array[] = $row['order_cash_receivable'];
 	$sub_array[] = $payment_mode;
 	$sub_array[] = $status;
 	$sub_array[] = $row['inventory_order_date'];

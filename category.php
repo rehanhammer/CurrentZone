@@ -54,7 +54,7 @@ include('header.php');
     </div>
     <div id="categoryModal" class="modal fade">
     	<div class="modal-dialog">
-    		<form method="post" id="category_form">
+    		<form method="post" id="category_form" autocomplete="off">
     			<div class="modal-content">
     				<div class="modal-header">
     					<button type="button" class="close" data-dismiss="modal">&times;</button>

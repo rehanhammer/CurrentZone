@@ -17,7 +17,7 @@ include('header.php');
 	if($_SESSION['type'] == 'master')
 	{
 	?>
-	<div class="col-md-3">
+	<div class="col-md-4">
 		<div class="panel panel-default">
 			<div class="panel-heading"><strong>Total User</strong></div>
 			<div class="panel-body" align="center">
@@ -25,7 +25,7 @@ include('header.php');
 			</div>
 		</div>
 	</div>
-	<div class="col-md-3">
+	<div class="col-md-4">
 		<div class="panel panel-default">
 			<div class="panel-heading"><strong>Total Category</strong></div>
 			<div class="panel-body" align="center">
@@ -33,7 +33,7 @@ include('header.php');
 			</div>
 		</div>
 	</div>
-	<div class="col-md-3">
+	<div class="col-md-4">
 		<div class="panel panel-default">
 			<div class="panel-heading"><strong>Total Brand</strong></div>
 			<div class="panel-body" align="center">
@@ -41,11 +41,27 @@ include('header.php');
 			</div>
 		</div>
 	</div>
-	<div class="col-md-3">
+	<div class="col-md-4">
 		<div class="panel panel-default">
 			<div class="panel-heading"><strong>Total Item in Stock</strong></div>
 			<div class="panel-body" align="center">
 				<h1><?php echo count_total_product($connect); ?></h1>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-4">
+		<div class="panel panel-default">
+			<div class="panel-heading"><strong>Total Completed Order</strong></div>
+			<div class="panel-body" align="center">
+				<h1><?php echo count_total_order($connect); ?></h1>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-4">
+		<div class="panel panel-default">
+			<div class="panel-heading"><strong>Total Pending Order</strong></div>
+			<div class="panel-body" align="center">
+				<h1><?php echo count_total_pending_order($connect); ?></h1>
 			</div>
 		</div>
 	</div>
