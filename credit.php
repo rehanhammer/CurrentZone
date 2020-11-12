@@ -23,27 +23,36 @@ include('header.php');
                 <div class="panel-heading">
                 	<div class="row">
                     	<div class="col-lg-10 col-md-10 col-sm-8 col-xs-6">
-                            <h3 class="panel-title">Credit History List</h3>
+                            <h3 class="panel-title">Account Receivable / Account Payable</h3>
+                        </div>
+						<div class="col-lg-2 col-md-2 col-sm-4 col-xs-6" align="right">
+						<select id = "cus_name" name = "cus_name" class="form-control">
+							<option value = ''>Select Customer</option>
+							<?php echo fill_customer_list($connect);?>
+						</select>
                         </div>
                     </div>
                 </div>
-                <div class="panel-body">
+                <div class="panel-body hide" id = "showtable">
                 	<table id="credit_data" class="table table-bordered table-striped">
                 		<thead>
 							<tr>
-								<th>History ID</th>
+								<th>AR/AP ID</th>
                                 <th>Order ID</th>
-                                <th>Product Name</th>
-                                <th>Purchaser Name</th>
-								<th>Credit Amount</th>
-								<th>Credit Date</th>
+								<th>Customer Name</th>
+								<!-- <th>Product Name</th> -->
+                                <th>Description</th>
+								<th>Total Balance Of Order</th>
+								<th>Cash Received</th>
+								<th>Total Balance Receivable</th>
+								<th>AR/AP Date</th>
 								<?php
 								if($_SESSION['type'] == 'master')
 								{
-									echo '<th>Credit Enter By</th>';
+									echo '<th>Enter By</th>';
 								}
 								?>
-                                <th>Status</th>
+								<th>AR/AP Enter Date</th>
 							</tr>
 						</thead>
                 	</table>
@@ -74,15 +83,47 @@ include('header.php');
 <script type="text/javascript">
     $(document).ready(function(){
 
-    	var orderdataTable = $('#credit_data').DataTable({
+    	// var orderdataTable = $('#credit_data').DataTable({
+		// 	"processing":true,
+		// 	"serverSide":true,
+		// 	"order":[],
+		// 	"ajax":{
+		// 		url:"credit_fetch.php",
+		// 		type:"POST"
+		// 	},
+		// 	"pageLength": 10
+		// });
+    });
+
+	$('#cus_name').change(function(){
+
+		var value = $(this).val();
+		$('#showtable').removeClass('hide');
+		$('#showtable').show();
+		
+		var orderdataTable = $('#credit_data').DataTable({
+			dom: 'Blfrtip',
+        	buttons: [
+            	'excelHtml5',
+            	'pdfHtml5'
+        	],
 			"processing":true,
 			"serverSide":true,
+			"bDestroy": true,
 			"order":[],
 			"ajax":{
 				url:"credit_fetch.php",
-				type:"POST"
+				type:"POST",
+				"data" : {
+            	"customerName" : value,
+				}
 			},
 			"pageLength": 10
 		});
-    });
+
+	});
 </script>
+
+<?php
+include('footer.php');
+?>

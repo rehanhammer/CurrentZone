@@ -24,7 +24,11 @@ include('header.php');
 		$('#inventory_order_date').datepicker({
 			format: "yyyy-mm-dd",
 			autoclose: true
-		})
+		});
+		$('#cash_received_date').datepicker({
+			format: "yyyy-mm-dd",
+			autoclose: true
+		});
 	});
 	</script>
 
@@ -51,6 +55,7 @@ include('header.php');
 								<th>Customer Name</th>
 								<th>Total Amount</th>
 								<th>Cash Receivable</th>
+								<th>Profit</th>
 								<th>Payment Mode</th>
 								<th>Order Status</th>
 								<th>Order Date</th>
@@ -70,8 +75,8 @@ include('header.php');
                 </div>
             </div>
         </div>
-    </div>
-
+	</div>
+	
 	<div id="orderdetailsModal" class="modal fade">
         <div class="modal-dialog">
         	<form method="post" id="order_detail_form" autocomplete="off">
@@ -94,8 +99,9 @@ include('header.php');
     <div id="orderModal" class="modal fade">
 
     	<div class="modal-dialog1">
+			<div class="modal-content1">
+
     		<form method="post" id="order_form" autocomplete="off">
-    			<div class="modal-content1">
     				<div class="modal-header">
     					<button type="button" class="close" data-dismiss="modal">&times;</button>
 						<h4 class="modal-title"><i class="fa fa-plus"></i> Create Order</h4>
@@ -115,9 +121,13 @@ include('header.php');
 								</div>
 							</div>
 						</div>
-						<div class="form-group">
-							<label>Enter Receiver Address</label>
-							<textarea name="inventory_order_address" id="inventory_order_address" class="form-control" required></textarea>
+						<div class = "row">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Enter Receiver Mobile Number</label>
+									<input type="text" name="customer_mobile_no" id="customer_mobile_no" class="form-control" required pattern="[+-]?([0-9]*[.])?[0-9]+" />
+								</div>
+							</div>
 						</div>
 						<div class="form-group">
 							<label>Enter Product Details</label>
@@ -125,13 +135,24 @@ include('header.php');
 							<span id="span_product_details"></span>
 							<hr />
 						</div>
+						
 						<div class="form-group">
 							<label>Cash Received</label>
 							<input type="text" name="cash_received" id="cash_received" class="form-control" value = "0" />
 						</div>
-						<div class="form-group" id = "for_edit" >
-							<label>Cash Remaining</label>
-							<input type="text" name="cash_remaining" id="cash_remaining" class="form-control" readonly />
+						<div class="form-group">
+							<label>Cash Received At (Bank Name)/ By Hand</label>
+							<input type="text" name="cash_received_at" id="cash_received_at" class="form-control" />
+						</div>
+						<div id = "for_edit">
+							<div class="form-group" >
+								<label>Cash Received Date</label>
+								<input type="text" name="cash_received_date" id="cash_received_date" class="form-control" />
+							</div>
+							<div class="form-group"  >
+								<label>Cash Remaining</label>
+								<input type="text" name="cash_remaining" id="cash_remaining" class="form-control" readonly />
+							</div>
 						</div>
 						<div class="form-group">
 							<label>Select Payment Mode</label>
@@ -143,8 +164,8 @@ include('header.php');
 						<div class="form-group">
 							<label>Select Payment Status</label>
 							<select name="order_status" id="order_status" class="form-control">
-								<option value="1">Completed / Full Payment</option>
-								<option value="2">In Progress / Half Payment</option>
+								<option value="1">Completed</option>
+								<option value="2">In Progress</option>
 								<option value="3">InActive</option>
 							</select>
 						</div>
@@ -199,6 +220,7 @@ include('header.php');
 		});
 
 		$('#add_button').click(function(){
+			$("#inventory_order_date").attr("disabled", false);
 			$('#orderModal').modal('show');
 			$('#for_edit').hide();
 			$('#order_form')[0].reset();
@@ -213,22 +235,22 @@ include('header.php');
 		{
 			var html = '';
 			html += '<span id="row'+count+'"><div class="row">';
-			html += '<div class="col-md-3"> Product Name';
+			html += '<div class="col-md-2"> Product Name';
 			html += '<select name="product_id[]" id="product_id'+count+'" class="form-control selectpicker" data-live-search="true" required>';
 			html += '<option value="" selected>Select Product</option>';
 			html += '<?php echo fill_product_list($connect); ?>';
 			html += '</select><input type="hidden" name="hidden_product_id[]" id="hidden_product_id'+count+'" />';
 			html += '</div>';
-			html += '<div class="col-md-2">Quantity';
+			html += '<div class="col-md-1">Pieces';
 			html += '<input type="text" id="quantity'+count+'" name="quantity[]" class="form-control" required />';
 			html += '</div>';
-			html += '<div class="col-md-2">Remaining';
+			html += '<div class="col-md-2">Pieces Left';
 			html +=	'<input type="text" name="hidden_quantity[]" class="form-control" id="hidden_quantity'+count+'" readonly />';
 			html += '</div>';
-			html += '<div class="col-md-2">Price Per Quantity';
+			html += '<div class="col-md-1">Price';
 			html += '<input type="text" name="sale_price[]" id="sale_price'+count+'" class="form-control" required />';
 			html += '</div>';
-			html += '<div class="col-md-2">Total';
+			html += '<div class="col-md-2">Total Amount';
 			html += '<input type="text" name="amount_total[]" id="amount_total'+count+'" class="form-control" readonly />';
 			html += '</div>';
 			html += '<div class="col-md-1">';
@@ -248,7 +270,7 @@ include('header.php');
 
 			$('#product_id'+count).change(function(){
 				var product_id = $(this).val();
-				var btn_action = 'fetch_productquantity';
+				var btn_action = 'fetch_productweight';
 
 				$.ajax({
 					type:'POST',
@@ -256,7 +278,7 @@ include('header.php');
 					url:'order_action.php',
 					dataType:"json",
 					success:function(data){
-						$('#hidden_quantity'+count).val(data.product_quantity_remaining);
+						$('#hidden_quantity'+count).val(data.product_weight_remaining);
 					}
 				});
 			});
@@ -273,12 +295,19 @@ include('header.php');
 			});
 
 			$('#sale_price'+count).change(function(){
-				var quantity = $('#quantity'+count).val();
+				var weight = $('#quantity'+count).val();
 				var sale_price = $('#sale_price'+count).val();
 				var btn_action = 'fetch_producttotal';
 
-				var total = quantity * sale_price;
-				$('#amount_total'+count).val(total);
+				$.ajax({
+					type:'POST',
+					data:{ weight:weight, sale_price:sale_price, btn_action: btn_action},
+					url:'order_action.php',
+					dataType:"json",
+					success:function(data){
+						$('#amount_total'+count).val(data);
+					}
+				});
 			});
 		}
 
@@ -326,8 +355,6 @@ include('header.php');
     });
 
 		$(document).on('click', '.update', function(){
-			$('#for_edit').show();
-
 			var inventory_order_id = $(this).attr("id");
 			var btn_action = 'fetch_single';
 			$.ajax({
@@ -337,14 +364,16 @@ include('header.php');
 				dataType:"json",
 				success:function(data)
 				{
+					$("#inventory_order_date").attr("disabled", true);
 					$('#orderModal').modal('show');
+					$('#for_edit').show();
 					$('#inventory_order_name').val(data.inventory_order_name);
 					$('#inventory_order_date').val(data.inventory_order_date);
-					$('#inventory_order_address').val(data.inventory_order_address);
+					$('#customer_mobile_no').val(data.customer_mobile_no);
 					$('#span_product_details').html(data.product_details);
 					$('#cash_remaining').val(data.cash_remaining);
 					$('#payment_mode').val(data.payment_mode);
-					$('#order_status').val(data.order_status);
+					$('#order_status').val(data.inventory_order_status);
 					$('.modal-title').html("<i class='fa fa-pencil-square-o'></i> Edit Order");
 					$('#inventory_order_id').val(inventory_order_id);
 					$('#action').val('Edit');
@@ -378,3 +407,7 @@ include('header.php');
 
     });
 </script>
+
+<?php
+include('footer.php');
+?>

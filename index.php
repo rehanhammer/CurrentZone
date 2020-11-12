@@ -17,7 +17,7 @@ include('header.php');
 	if($_SESSION['type'] == 'master')
 	{
 	?>
-	<div class="col-md-4">
+	<div class="col-md-3">
 		<div class="panel panel-default">
 			<div class="panel-heading"><strong>Total User</strong></div>
 			<div class="panel-body" align="center">
@@ -25,23 +25,8 @@ include('header.php');
 			</div>
 		</div>
 	</div>
-	<div class="col-md-4">
-		<div class="panel panel-default">
-			<div class="panel-heading"><strong>Total Category</strong></div>
-			<div class="panel-body" align="center">
-				<h1><?php echo count_total_category($connect); ?></h1>
-			</div>
-		</div>
-	</div>
-	<div class="col-md-4">
-		<div class="panel panel-default">
-			<div class="panel-heading"><strong>Total Brand</strong></div>
-			<div class="panel-body" align="center">
-				<h1><?php echo count_total_brand($connect); ?></h1>
-			</div>
-		</div>
-	</div>
-	<div class="col-md-4">
+
+	<div class="col-md-3">
 		<div class="panel panel-default">
 			<div class="panel-heading"><strong>Total Item in Stock</strong></div>
 			<div class="panel-body" align="center">
@@ -49,7 +34,8 @@ include('header.php');
 			</div>
 		</div>
 	</div>
-	<div class="col-md-4">
+
+	<div class="col-md-3">
 		<div class="panel panel-default">
 			<div class="panel-heading"><strong>Total Completed Order</strong></div>
 			<div class="panel-body" align="center">
@@ -57,7 +43,8 @@ include('header.php');
 			</div>
 		</div>
 	</div>
-	<div class="col-md-4">
+	
+	<div class="col-md-3">
 		<div class="panel panel-default">
 			<div class="panel-heading"><strong>Total Pending Order</strong></div>
 			<div class="panel-body" align="center">
@@ -65,17 +52,35 @@ include('header.php');
 			</div>
 		</div>
 	</div>
+	<!-- <div class="col-md-4">
+		<div class="panel panel-default">
+			<div class="panel-heading"><strong>Total Weight Purchase</strong></div>
+			<div class="panel-body" align="center">
+				<h1><?php echo count_total_weight_purchase($connect); ?> Kg</h1>
+			</div>
+		</div>
+	</div>
+	
+	<div class="col-md-4">
+		<div class="panel panel-default">
+			<div class="panel-heading"><strong>Total Weight Sold</strong></div>
+			<div class="panel-body" align="center">
+				<h1><?php echo count_total_weight_sold($connect); ?> Kg</h1>
+			</div>
+		</div>
+	</div>
+	
+	<div class="col-md-4">
+		<div class="panel panel-default">
+			<div class="panel-heading"><strong>Total Weight In Stock</strong></div>
+			<div class="panel-body" align="center">
+				<h1><?php echo count_total_weight_sold($connect); ?> Kg</h1>
+			</div>
+		</div>
+	</div> -->
 	<?php
 	}
 	?>
-		<div class="col-md-4">
-			<div class="panel panel-default">
-				<div class="panel-heading"><strong>Total Order Value(Base Price)</strong></div>
-				<div class="panel-body" align="center">
-					<h1><?php echo count_total_order_value_base($connect); ?></h1>
-				</div>
-			</div>
-		</div>
 		<div class="col-md-4">
 			<div class="panel panel-default">
 				<div class="panel-heading"><strong>Total Order Value(Sale Price)</strong></div>
@@ -84,6 +89,16 @@ include('header.php');
 				</div>
 			</div>
 		</div>
+		
+		<div class="col-md-4">
+			<div class="panel panel-default">
+				<div class="panel-heading"><strong>Total Order Value(Base Price)</strong></div>
+				<div class="panel-body" align="center">
+					<h1><?php echo count_total_actual_order_value($connect); ?></h1>
+				</div>
+			</div>
+		</div>
+		
 		<div class="col-md-4">
 			<div class="panel panel-default">
 				<div class="panel-heading"><strong>Total Cash Received</strong></div>
@@ -92,6 +107,7 @@ include('header.php');
 				</div>
 			</div>
 		</div>
+		
 		<div class="col-md-4">
 			<div class="panel panel-default">
 				<div class="panel-heading"><strong>Total Credit / Cash Receivable</strong></div>
@@ -100,15 +116,24 @@ include('header.php');
 				</div>
 			</div>
 		</div>
+		
 		<div class="col-md-4">
 			<div class="panel panel-default">
-				<div class="panel-heading"><strong>Total Profit</strong></div>
+				<div class="panel-heading"><strong>Total Profit Without Expense</strong></div>
 				<div class="panel-body" align="center">
-					<h1><?php echo count_total_profit_order_value($connect); ?></h1>
+					<h1><?php echo count_total_profit_without_expense($connect); ?></h1>
 				</div>
 			</div>
 		</div>
-
+		
+		<div class="col-md-4">
+			<div class="panel panel-default">
+				<div class="panel-heading"><strong>Total Profit With Expense</strong></div>
+				<div class="panel-body" align="center">
+					<h1><?php echo count_total_profit_with_expense($connect); ?></h1>
+				</div>
+			</div>
+		</div>
 		<hr />
 		<?php
 		if($_SESSION['type'] == 'master')

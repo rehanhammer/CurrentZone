@@ -52,12 +52,11 @@ include('header.php');
                             <table id="product_data" class="table table-bordered table-striped">
                                 <thead><tr>
                                     <th>ID</th>
-                                    <th>Category</th>
-                                    <th>Brand</th>
                                     <th>Product Name</th>
-                                    <th>Available Quantity</th>
-                                    <th>Sold Quantity</th>
-                                    <th>Purchase From</th>
+                                    <th>Total Pieces</th>
+                                    <th>Available Pieces</th>
+                                    <th>Sold Pieces</th>
+                                    <th>Purchase Date</th>
                                     <th>Enter By</th>
                                     <th>Status</th>
                                     <th></th>
@@ -81,72 +80,41 @@ include('header.php');
                         </div>
                         <div class="modal-body">
                             <div class="form-group">
-                                <label>Select Category</label>
-                                <select name="category_id" id="category_id" class="form-control" required>
-                                    <option value="">Select Category</option>
-                                    <?php echo fill_category_list($connect);?>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Select Brand</label>
-                                <select name="brand_id" id="brand_id" class="form-control" required>
-                                    <option value="">Select Brand</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
                                 <label>Enter Product Name</label>
                                 <input type="text" name="product_name" id="product_name" class="form-control" required />
                             </div>
                             <div class="form-group">
-                                <label>Enter Product Description</label>
-                                <textarea name="product_description" id="product_description" class="form-control" rows="5" required></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label>Enter Product Quantity</label>
+                                <label>Enter Product Pieces</label>
                                 <div class="input-group">
-                                    <input type="text" name="product_quantity" id="product_quantity" class="form-control" required pattern="[+-]?([0-9]*[.])?[0-9]+" /> 
+                                    <input type="text" name="product_weight" id="product_weight" class="form-control" required pattern="[+-]?([0-9]*[.])?[0-9]+" /> 
                                     <span class="input-group-addon">
                                         <select name="product_unit" id="product_unit" required>
                                             <option value="">Select Unit</option>
-                                            <option value="Bags">Bags</option>
-                                            <option value="Bottles">Bottles</option>
-                                            <option value="Box">Box</option>
-                                            <option value="Dozens">Dozens</option>
-                                            <option value="Feet">Feet</option>
-                                            <option value="Gallon">Gallon</option>
-                                            <option value="Grams">Grams</option>
-                                            <option value="Inch">Inch</option>
-                                            <option value="Kg">Kg</option>
-                                            <option value="Liters">Liters</option>
-                                            <option value="Meter">Meter</option>
-                                            <option value="Nos">Nos</option>
-                                            <option value="Packet">Packet</option>
-                                            <option value="Rolls">Rolls</option>
+                                            <option value="Pieces">Pieces</option>
                                         </select>
                                     </span>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label>Enter Product Base Price</label>
-                                <input type="text" name="product_base_price" id="product_base_price" class="form-control" required pattern="[+-]?([0-9]*[.])?[0-9]+" />
-                            </div>
-                            <div id = "for_add">
-                                <div class="form-group">
-                                    <label>Enter Product Supplier Name</label>
-                                    <input type="text" name="supplier_name" id="supplier_name" class="form-control" required />
-                                </div>
-                                <div class="form-group">
-                                    <label>Enter Product Supplier Contact No</label>
-                                    <input type="text" name="supplier_contact" id="supplier_contact" class="form-control" required pattern="[+-]?([0-9]*[.])?[0-9]+" />
-                                </div>
+                            <div id = "for_add" style="display: none">
                                 <!-- <div class="form-group">
-                                    <label>Enter Product Tax (%)</label>
-                                    <input type="text" name="product_tax" id="product_tax" class="form-control" required pattern="[+-]?([0-9]*[.])?[0-9]+" />
+                                    <label>Enter Product Total Weight</label>
+                                    <input type = "text" name="product_total_weight" id="product_total_weight" class="form-control" required/>
                                 </div> -->
                                 <div class="form-group">
-                                    <label>Enter Product Date</label>
-                                    <input type="text" name="product_date" id="product_date" class="form-control" required />
+                                    <label>Enter Product Base Price / Rate</label>
+                                    <input type="text" name="product_base_price" id="product_base_price" class="form-control" required pattern="[+-]?([0-9]*[.])?[0-9]+" />
                                 </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Enter Product Date</label>
+                                <input type="text" name="product_date" id="product_date" class="form-control" required />
+                            </div>
+                            <div class="form-group">
+                                <label>Enter Product Status</label>
+                                <select name="product_status" class="form-control" id="product_status" required>
+                                    <option value="1">Active</option>
+                                    <option value="2">InActive</option>
+                                </select>
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -192,7 +160,7 @@ $(document).ready(function(){
         },
         "columnDefs":[
             {
-                "targets":[7, 8, 9],
+                "targets":[5, 6, 7],
                 "orderable":false,
             },
         ],
@@ -200,26 +168,13 @@ $(document).ready(function(){
     });
 
     $('#add_button').click(function(){
-        $('#for_add').show();
         $('#productModal').modal('show');
+        //$("#product_date").attr("disabled", false);
+        $("#for_add").show();
         $('#product_form')[0].reset();
         $('.modal-title').html("<i class='fa fa-plus'></i> Add Product");
         $('#action').val("Add");
         $('#btn_action').val("Add");
-    });
-
-    $('#category_id').change(function(){
-        var category_id = $('#category_id').val();
-        var btn_action = 'load_brand';
-        $.ajax({
-            url:"product_action.php",
-            method:"POST",
-            data:{category_id:category_id, btn_action:btn_action},
-            success:function(data)
-            {
-                $('#brand_id').html(data);
-            }
-        });
     });
 
     $(document).on('submit', '#product_form', function(event){
@@ -256,7 +211,7 @@ $(document).ready(function(){
     });
 
     $(document).on('click', '.update', function(){
-        $('#for_add').hide();
+        $("#for_add").hide();
         var product_id = $(this).attr("id");
         var btn_action = 'fetch_single';
         $.ajax({
@@ -266,17 +221,18 @@ $(document).ready(function(){
             dataType:"json",
             success:function(data){
                 $('#productModal').modal('show');
-                $('#category_id').val(data.category_id);
-                $('#brand_id').html(data.brand_select_box);
-                $('#brand_id').val(data.brand_id);
                 $('#product_name').val(data.product_name);
-                $('#product_description').val(data.product_description);
-                //$('#product_quantity').val(data.product_quantity_remaining);
+                $('#product_weight').val(data.product_weight_remaining);
                 $('#product_unit').val(data.product_unit);
                 $('#product_base_price').val(data.product_base_price);
+                $('#product_carriage').val(data.product_carriage_per_kg);
+                $('#product_lifter').val(data.product_lifter_expense);
+                $('#product_cutting').val(data.product_cutting_expense);
+                $('#product_wage').val(data.product_wage_expense);
                 $('#product_date').val(data.product_date);
-                $('#supplier_name').val(data.supplier_name);
-                $('#supplier_contact').val(data.supplier_contact);
+                $('#product_status').val(data.product_status);
+                //$("#product_date").attr("disabled", true);
+
                 $('.modal-title').html("<i class='fa fa-pencil-square-o'></i> Edit Product");
                 $('#product_id').val(product_id);
                 $('#action').val("Edit");
@@ -309,3 +265,7 @@ $(document).ready(function(){
 
 });
 </script>
+
+<?php
+include('footer.php');
+?>

@@ -11,7 +11,8 @@ $query = '';
 $output = array();
 
 $query .= "
-	SELECT * FROM inventory_order WHERE 
+	SELECT * FROM inventory_order
+	WHERE 
 ";
 
 if($_SESSION['type'] == 'user')
@@ -21,11 +22,10 @@ if($_SESSION['type'] == 'user')
 
 if(isset($_POST["search"]["value"]))
 {
-	$query .= '(inventory_order_id LIKE "%'.$_POST["search"]["value"].'%" ';
-	$query .= 'OR inventory_order_name LIKE "%'.$_POST["search"]["value"].'%" ';
-	$query .= 'OR inventory_order_sale_price_total LIKE "%'.$_POST["search"]["value"].'%" ';
-	$query .= 'OR inventory_order_status LIKE "%'.$_POST["search"]["value"].'%" ';
-	$query .= 'OR payment_mode LIKE "%'.$_POST["search"]["value"].'%" ';
+	$query .= '(inventory_order.inventory_order_id LIKE "%'.$_POST["search"]["value"].'%" ';
+	$query .= 'OR customer_name LIKE "%'.$_POST["search"]["value"].'%" ';
+	$query .= 'OR inventory_order_total LIKE "%'.$_POST["search"]["value"].'%" ';
+	// $query .= 'OR inventory_order_status LIKE "%'.$_POST["search"]["value"].'%" ';
 	$query .= 'OR inventory_order_date LIKE "%'.$_POST["search"]["value"].'%") ';
 }
 
@@ -35,7 +35,7 @@ if(isset($_POST["order"]))
 }
 else
 {
-	$query .= 'ORDER BY inventory_order_id DESC ';
+	$query .= 'ORDER BY inventory_order.inventory_order_id DESC ';
 }
 
 if($_POST["length"] != -1)
@@ -43,22 +43,26 @@ if($_POST["length"] != -1)
 	$query .= 'LIMIT ' . $_POST['start'] . ', ' . $_POST['length'];
 }
 
+//print_r($query);exit();
+
 $statement = $connect->prepare($query);
 $statement->execute();
 $result = $statement->fetchAll();
 $data = array();
 $filtered_rows = $statement->rowCount();
+$total_profit = 0;
 foreach($result as $row)
 {
-	$payment_mode = '';
+	$profit_count = countProfit($connect, $row['inventory_order_id']);
+	$payment_status = '';
 
-	if($row['payment_mode'] == 'cash')
+	if($row['payment_status'] == 'cash')
 	{
-		$payment_mode = '<span class="label label-primary">Cash</span>';
+		$payment_status = '<span class="label label-primary">Cash</span>';
 	}
 	else
 	{
-		$payment_mode = '<span class="label label-warning">Credit</span>';
+		$payment_status = '<span class="label label-warning">Credit</span>';
 	}
 
 	$status = '';
@@ -66,19 +70,21 @@ foreach($result as $row)
 	{
 		$status = '<span class="label label-success">Completed</span>';
 	}
-	elseif($row['inventory_order_status'] == '2')
+	else if($row['inventory_order_status'] == '2')
 	{
 		$status = '<span class="label label-primary">InProgress</span>';
 	}
 	else{
-		$status = '<span class="label label-danger">Inactive</span>';
+		$status = '<span class="label label-danger">InActive</span>';
 	}
+	
 	$sub_array = array();
 	$sub_array[] = $row['inventory_order_id'];
-	$sub_array[] = $row['inventory_order_name'];
-	$sub_array[] = $row['inventory_order_sale_price_total'];
-	$sub_array[] = $row['order_cash_receivable'];
-	$sub_array[] = $payment_mode;
+	$sub_array[] = $row['customer_name'];
+	$sub_array[] = number_format($row['inventory_order_total'],2);
+	$sub_array[] = number_format($row['inventory_order_cash_receivable'],2);
+	$sub_array[] = "Rs. ". number_format($profit_count, 2);
+	$sub_array[] = $payment_status;
 	$sub_array[] = $status;
 	$sub_array[] = $row['inventory_order_date'];
 	if($_SESSION['type'] == 'master')
@@ -87,9 +93,16 @@ foreach($result as $row)
 	}
 	$sub_array[] = '<button type="button" name="view" id="'.$row["inventory_order_id"].'" class="btn btn-info btn-xs view">View</button>';
 	$sub_array[] = '<a href="view_order.php?pdf=1&order_id='.$row["inventory_order_id"].'" class="btn btn-info btn-xs">View PDF</a>';
-	$sub_array[] = '<button type="button" name="update" id="'.$row["inventory_order_id"].'" class="btn btn-warning btn-xs update">Update</button>';
-	$sub_array[] = '<button type="button" name="delete" id="'.$row["inventory_order_id"].'" class="btn btn-danger btn-xs delete" data-status="'.$row["inventory_order_status"].'">Delete</button>';
-	$data[] = $sub_array;
+	//if($row['inventory_order_status'] == '3' || $row['inventory_order_status'] == '2')
+	//{
+		$sub_array[] = '<button type="button" name="update" id="'.$row["inventory_order_id"].'" class="btn btn-warning btn-xs update">Update</button>';
+		$sub_array[] = '<button type="button" name="delete" id="'.$row["inventory_order_id"].'" class="btn btn-danger btn-xs delete" data-status="'.$row["inventory_order_status"].'">Delete</button>';
+	//}
+	// else{
+	// 	$sub_array[] = $status;
+	// 	$sub_array[] = $status;
+	// }
+		$data[] = $sub_array;
 }
 
 function get_total_all_records($connect)

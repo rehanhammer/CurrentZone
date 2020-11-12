@@ -1,0 +1,25 @@
+Welcome
+
+*First download and install Xamp 7.3.11
+*After that place the project folder (chaudry_steels) in xampp diectory which is "xampp/htdocs" folder
+*You will find the database of this project inside the folder name with "chaudry_steels.sql"
+*You need to import this database, for import you need to start appache server and mysql from XAMPP
+*Then open admin console of Mysql, you will the option Admin infront of mysql thats where you import your database.
+*Once database is import you can use the software.
+
+Your url should be "localhost/chaudry_steels"
+
+Note: While inserting orders for customers, please use the same name of customer again and again dont change the name in next orders
+
+If you have any query you can conatct me any time
+
+
+Credentials
+
+UserEmail: bilalchaudry@gmail.com
+Password : 123456
+
+these are temporary credentails you can change them later
+
+Thank you
+

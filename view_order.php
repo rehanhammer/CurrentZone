@@ -23,8 +23,10 @@ if(isset($_GET["pdf"]) && isset($_GET['order_id']))
 		)
 	);
 	$result = $statement->fetchAll();
+	$total_value = 0;
 	foreach($result as $row)
 	{
+		$total_value = $row['inventory_order_total'];
 		$output .= '
 		<table width="100%" border="1" cellpadding="5" cellspacing="0">
 			<tr>
@@ -37,8 +39,8 @@ if(isset($_GET["pdf"]) && isset($_GET['order_id']))
 						<td width="65%">
 							To,<br />
 							<b>RECEIVER (BILL TO)</b><br />
-							Name : '.$row["inventory_order_name"].'<br />	
-							Billing Address : '.$row["inventory_order_address"].'<br />
+							Name : '.$row["customer_name"].'<br />	
+							Mobile Number : '.$row["customer_mobile_no"].'<br />
 						</td>
 						<td width="35%">
 							Reverse Charge<br />
@@ -52,8 +54,10 @@ if(isset($_GET["pdf"]) && isset($_GET['order_id']))
 					<tr>
 						<th>Sr No.</th>
 						<th>Product</th>
-						<th>Quantity</th>
+						<th>Weight</th>
 						<th>Price</th>
+						<th>Cash Received</th>
+						<th>Cash Receivable</th>
 						<th>Actual Amt.</th>
 						<th>Total</th>
 					</tr>
@@ -77,25 +81,29 @@ if(isset($_GET["pdf"]) && isset($_GET['order_id']))
 		{
 			$count = $count + 1;
 			$product_data = fetch_product_details($sub_row['product_id'], $connect);
-			$actual_amount = $sub_row["quantity"] * $sub_row["sale_price"];
+			$actual_amount = $sub_row['product_amount'];//$sub_row["weight"] * $sub_row["sale_price"];
+			
+			$total_product_amount = $actual_amount;
 			$total_actual_amount = $total_actual_amount + $actual_amount;
-			$total_tax_amount = $total_tax_amount + $tax_amount;
-			$total = $total + $actual_amount;
+			$total = $total + $total_product_amount;
+
 			$output .= '
 				<tr>
 					<td>'.$count.'</td>
 					<td>'.$product_data['product_name'].'</td>
-					<td>'.$sub_row["quantity"].'</td>
+					<td>'.$sub_row["weight"].'</td>
 					<td aling="right">'.$sub_row["sale_price"].'</td>
-					<td align="right">'.number_format($actual_amount, 2).'</td>
+					<td>'.$row["order_cash_received"].'</td>
+					<td>'.$row["inventory_order_cash_receivable"].'</td>
+					<td align="right">'.number_format($sub_row['product_amount'], 2).'</td>
 					
-					<td align="right">'.number_format($actual_amount, 2).'</td>
+					<td align="right">'.number_format($sub_row['product_amount'], 2).'</td>
 				</tr>
 			';
 		}
 		$output .= '
 		<tr>
-			<td align="right" colspan="4"><b>Total</b></td>
+			<td align="right" colspan="6"><b>Total</b></td>
 			<td align="right"><b>'.number_format($total_actual_amount, 2).'</b></td>
 			<td align="right"><b>'.number_format($total, 2).'</b></td>
 		</tr>

@@ -9,49 +9,54 @@ include('function.php');
 
 if(isset($_POST['btn_action']))
 {
-	if($_POST['btn_action'] == 'load_brand')
-	{
-		echo fill_brand_list($connect, $_POST['category_id']);
-	}
 
 	if($_POST['btn_action'] == 'Add')
 	{
+		$product_weight = $_POST['product_weight'];
+		$product_rate = $_POST['product_base_price'];
+
+		$total_cost = $product_weight * $product_rate;
+		
+		$cost_per_piece = $total_cost / $product_weight ;
+
 		$query = "
-		INSERT INTO product (category_id, brand_id, product_name, product_description, product_quantity, product_quantity_remaining, product_quantity_sold, product_unit, product_base_price, product_total_amount, product_supplier_name, product_supplier_contact_no, product_enter_by, product_status, product_date) 
-		VALUES (:category_id, :brand_id, :product_name, :product_description, :product_quantity, :product_quantity_remaining, :product_quantity_sold, :product_unit, :product_base_price, :product_total_amount, :product_supplier_name, :product_supplier_contact_no, :product_enter_by, :product_status, :product_date)
+		INSERT INTO product (product_name, product_weight_remaining, product_total_weight,
+			product_unit, product_base_price,
+			product_total_cost, product_cost_per_kg, product_enter_by,
+			product_status, product_date) 
+			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 		";
 		$statement = $connect->prepare($query);
+
 		$statement->execute(
 			array(
-				':category_id'					=>	$_POST['category_id'],
-				':brand_id'						=>	$_POST['brand_id'],
-				':product_name'					=>	$_POST['product_name'],
-				':product_description'			=>	$_POST['product_description'],
-				':product_quantity'				=>	$_POST['product_quantity'],
-				':product_quantity_remaining'	=>	$_POST['product_quantity'],
-				':product_quantity_sold'		=>	0,
-				':product_unit'					=>	$_POST['product_unit'],
-				':product_base_price'			=>	$_POST['product_base_price'],
-				':product_total_amount'			=>	$_POST['product_base_price'] * $_POST['product_quantity'],
-				':product_supplier_name'		=>	$_POST['supplier_name'],
-				':product_supplier_contact_no'	=>	$_POST['supplier_contact'],
-				':product_enter_by'				=>	$_SESSION["user_id"],
-				':product_status'				=>	'active',
-				':product_date'					=>	$_POST['product_date'],
+					$_POST['product_name'],
+				 	$_POST['product_weight'],
+					$_POST['product_weight'],
+					$_POST['product_unit'],
+					$_POST['product_base_price'],
+					$total_cost,
+					$cost_per_piece,
+					$_SESSION["user_id"],
+					$_POST['product_status'],
+					$_POST['product_date']
 			)
 		);
 		$result = $statement->fetchAll();
-		if(isset($result))
+		$statement = $connect->query("SELECT LAST_INSERT_ID()");
+		$productid = $statement->fetchColumn();
+		if($productid)
 		{
 			echo 'Product Added';
+		}
+		else{
+			echo 'Product Not Added';
 		}
 	}
 	if($_POST['btn_action'] == 'product_details')
 	{
 		$query = "
 		SELECT * FROM product 
-		INNER JOIN category ON category.category_id = product.category_id 
-		INNER JOIN brand ON brand.brand_id = product.brand_id 
 		INNER JOIN user_details ON user_details.user_id = product.product_enter_by 
 		WHERE product.product_id = '".$_POST["product_id"]."'
 		";
@@ -65,7 +70,7 @@ if(isset($_POST['btn_action']))
 		foreach($result as $row)
 		{
 			$status = '';
-			if($row['product_status'] == 'active')
+			if($row['product_status'] == '1')
 			{
 				$status = '<span class="label label-success">Active</span>';
 			}
@@ -78,50 +83,37 @@ if(isset($_POST['btn_action']))
 				<td>Product Name</td>
 				<td>'.$row["product_name"].'</td>
 			</tr>
+
 			<tr>
-				<td>Product Description</td>
-				<td>'.$row["product_description"].'</td>
+				<td>Product Total Weight</td>
+				<td>'.$row["product_total_weight"].' '.$row["product_unit"].'</td>
 			</tr>
-			<tr>
-				<td>Category</td>
-				<td>'.$row["category_name"].'</td>
-			</tr>
-			<tr>
-				<td>Brand</td>
-				<td>'.$row["brand_name"].'</td>
-			</tr>
-			<tr>
-				<td>Total Quantity</td>
-				<td>'.$row["product_quantity"].' '.$row["product_unit"].'</td>
-			</tr>
+			
 			<tr>
 				<td>Available Quantity</td>
-				<td>'.$row["product_quantity_remaining"].' '.$row["product_unit"].'</td>
+				<td>'.$row["product_weight_remaining"].' '.$row["product_unit"].'</td>
 			</tr>
-			<tr>
-				<td>Sold Quantity</td>
-				<td>'.$row["product_quantity_sold"].' '.$row["product_unit"].'</td>
-			</tr>
+
 			<tr>
 				<td>Base Price</td>
 				<td>'.$row["product_base_price"].'</td>
 			</tr>
+				
 			<tr>
-				<td>Total Price</td>
-				<td>'.$row["product_total_amount"].'</td>
+				<td>Product Total Cost</td>
+				<td>'.$row["product_total_cost"].'</td>
 			</tr>
+			
 			<tr>
-				<td>Supplier Name</td>
-				<td>'.$row["product_supplier_name"].'</td>
+				<td>Product Cost Per Piece</td>
+				<td>'.$row["product_cost_per_kg"].'</td>
 			</tr>
-			<tr>
-				<td>Supplier Contact No</td>
-				<td>'.$row["product_supplier_contact_no"].'</td>
-			</tr>
+			
 			<tr>
 				<td>Enter By</td>
 				<td>'.$row["user_name"].'</td>
 			</tr>
+			
 			<tr>
 				<td>Status</td>
 				<td>'.$status.'</td>
@@ -148,51 +140,51 @@ if(isset($_POST['btn_action']))
 		$result = $statement->fetchAll();
 		foreach($result as $row)
 		{
-			$output['category_id'] = $row['category_id'];
-			$output['brand_id'] = $row['brand_id'];
-			$output["brand_select_box"] = fill_brand_list($connect, $row["category_id"]);
 			$output['product_name'] = $row['product_name'];
-			$output['product_description'] = $row['product_description'];
-			$output['product_quantity_remaining'] = $row['product_quantity_remaining'];
+			$output['product_weight_remaining'] = $row['product_weight_remaining'];
 			$output['product_unit'] = $row['product_unit'];
 			$output['product_base_price'] = $row['product_base_price'];
-			$output['supplier_name'] = $row['product_supplier_name'];
-			$output['supplier_contact'] = $row['product_supplier_contact_no'];
 			$output['product_date'] = $row['product_date'];
+			$output['product_status'] = $row['product_status'];
 		}
 		echo json_encode($output);
 	}
 
 	if($_POST['btn_action'] == 'Edit')
 	{
-		$date = getDateTime();
+		$datetime = getDateTime();
+		$product = fetch_product_details($_POST['product_id'], $connect);
+
+		$product_name = $_POST['product_name'];
+		$product_weight = $_POST['product_weight'] + $product['weight'];
+		$product_remaining_weight = $product['weight_remaining'] + $_POST['product_weight'];
+		
+		$total_cost = $product_weight * $product['price'];
 
 		$query = "
 		UPDATE product 
-		set category_id = :category_id, 
-		brand_id = :brand_id,
-		product_name = :product_name,
-		product_description = :product_description, 
-		product_quantity =  product_quantity + :product_quantity, 
-		product_quantity_remaining =  product_quantity_remaining + :product_quantity_remaining, 
-		product_unit = :product_unit, 
-		product_base_price = :product_base_price,
-		product_udt = :product_udt
+		set product_name = :product_name,
+		product_total_weight = product_total_weight + :product_total_weight,
+		product_weight_remaining = product_weight_remaining + :product_weight_remaining,
+		product_unit = :product_unit,
+		product_total_cost = :product_total_cost,
+		product_status = :product_status,
+		product_date = :product_date,
+		product_udt = :product_udt 
 		WHERE product_id = :product_id
 		";
 		$statement = $connect->prepare($query);
 		$statement->execute(
 			array(
-				':category_id'					=>	$_POST['category_id'],
-				':brand_id'						=>	$_POST['brand_id'],
-				':product_name'					=>	$_POST['product_name'],
-				':product_description'			=>	$_POST['product_description'],
-				':product_quantity'				=>	$_POST['product_quantity'],
-				':product_quantity_remaining'	=>	$_POST['product_quantity'],
-				':product_unit'					=>	$_POST['product_unit'],
-				':product_base_price'			=>	$_POST['product_base_price'],
-				':product_udt'					=>	$date,
-				':product_id'					=>	$_POST['product_id']
+				':product_name'				=>	$_POST['product_name'],
+				':product_total_weight'		=>	$_POST['product_weight'],
+				':product_weight_remaining'	=>	$_POST['product_weight'],
+				':product_unit'				=>	$_POST['product_unit'],
+				':product_total_cost'		=>	$total_cost,
+				':product_status'			=>	$_POST['product_status'],
+				':product_date'				=>	$_POST['product_date'],
+				':product_udt'          	=> 	$datetime,
+				':product_id'				=>	$_POST['product_id']
 			)
 		);
 		$result = $statement->fetchAll();
@@ -203,10 +195,10 @@ if(isset($_POST['btn_action']))
 	}
 	if($_POST['btn_action'] == 'delete')
 	{
-		$status = 'active';
-		if($_POST['status'] == 'active')
+		$status = '1';
+		if($_POST['status'] == '1')
 		{
-			$status = 'inactive';
+			$status = '2';
 		}
 		$query = "
 		UPDATE product 
@@ -223,7 +215,9 @@ if(isset($_POST['btn_action']))
 		$result = $statement->fetchAll();
 		if(isset($result))
 		{
-			echo 'Product status change to ' . $status;
+			echo 'Product status changed';
+
+			// echo 'Product status change to ' . $status;
 		}
 	}
 }

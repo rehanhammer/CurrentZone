@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 13, 2020 at 01:58 PM
+-- Generation Time: Nov 12, 2020 at 09:56 AM
 -- Server version: 10.4.8-MariaDB
 -- PHP Version: 7.3.11
 
@@ -25,94 +25,21 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `brand`
---
-
-CREATE TABLE `brand` (
-  `brand_id` int(11) NOT NULL,
-  `category_id` int(11) NOT NULL,
-  `brand_name` varchar(250) NOT NULL,
-  `brand_status` enum('active','inactive') NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Dumping data for table `brand`
---
-
-INSERT INTO `brand` (`brand_id`, `category_id`, `brand_name`, `brand_status`) VALUES
-(1, 1, 'Finibus', 'active'),
-(2, 1, 'Lorem', 'active'),
-(3, 1, 'Ipsum', 'active'),
-(4, 8, 'Dolor', 'active'),
-(5, 8, 'Amet', 'active'),
-(6, 6, 'Aliquam', 'active'),
-(7, 6, 'Maximus', 'active'),
-(8, 10, 'Venenatis', 'active'),
-(9, 10, 'Ligula', 'active'),
-(10, 3, 'Vitae', 'active'),
-(11, 3, 'Auctor', 'active'),
-(12, 5, 'Luctus', 'active'),
-(13, 5, 'Justo', 'active'),
-(14, 2, 'Phasellus', 'active'),
-(15, 2, 'Viverra', 'active'),
-(16, 4, 'Elementum', 'active'),
-(17, 4, 'Odio', 'active'),
-(18, 7, 'Tellus', 'active'),
-(19, 7, 'Curabitur', 'active'),
-(20, 9, 'Commodo', 'active'),
-(21, 9, 'Nullam', 'active'),
-(22, 11, 'Quisques', 'active'),
-(24, 11, 'XYZ', 'active');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `category`
---
-
-CREATE TABLE `category` (
-  `category_id` int(11) NOT NULL,
-  `category_name` varchar(250) NOT NULL,
-  `category_status` enum('active','inactive') NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Dumping data for table `category`
---
-
-INSERT INTO `category` (`category_id`, `category_name`, `category_status`) VALUES
-(1, 'LED Bulb', 'active'),
-(2, 'LED Lights', 'active'),
-(3, 'LED Down Lights', 'active'),
-(4, 'LED Panel Light', 'active'),
-(5, 'LED Lamp', 'active'),
-(6, 'LED Concealed Light', 'active'),
-(7, 'LED Spot Light', 'active'),
-(8, 'LED Ceiling Light', 'active'),
-(9, 'LED Tube Light', 'active'),
-(10, 'LED Driver', 'active'),
-(11, 'Led Floods Light', 'active'),
-(13, 'LED Outdoor Lighting', 'active'),
-(14, 'LED Indoor Lights', 'active');
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `inventory_order`
 --
 
 CREATE TABLE `inventory_order` (
   `inventory_order_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
-  `inventory_order_sale_price_total` double(10,2) NOT NULL,
-  `inventory_order_base_price_total` double(10,2) NOT NULL,
-  `order_cash_received` double(10,2) DEFAULT 0.00,
-  `order_cash_receivable` double(10,2) NOT NULL DEFAULT 0.00,
+  `inventory_order_total` double(10,2) NOT NULL,
+  `inventory_order_actual_total` double(10,2) DEFAULT NULL,
+  `order_cash_received` double(10,2) NOT NULL DEFAULT 0.00,
+  `inventory_order_cash_receivable` double(10,2) DEFAULT 0.00,
   `inventory_order_date` date NOT NULL,
-  `inventory_order_name` varchar(255) NOT NULL,
-  `inventory_order_address` text NOT NULL,
-  `payment_mode` enum('cash','credit') NOT NULL,
-  `inventory_order_status` tinyint(4) NOT NULL,
+  `customer_name` varchar(255) NOT NULL,
+  `customer_mobile_no` text NOT NULL,
+  `payment_status` enum('cash','credit') NOT NULL,
+  `inventory_order_status` tinyint(4) NOT NULL COMMENT '1:Completed, 2:Inprogress, 3:InActive',
   `inventory_order_sdt` datetime NOT NULL DEFAULT current_timestamp(),
   `inventory_order_udt` datetime DEFAULT NULL,
   `inventory_order_edt` datetime DEFAULT NULL
@@ -122,8 +49,8 @@ CREATE TABLE `inventory_order` (
 -- Dumping data for table `inventory_order`
 --
 
-INSERT INTO `inventory_order` (`inventory_order_id`, `user_id`, `inventory_order_sale_price_total`, `inventory_order_base_price_total`, `order_cash_received`, `order_cash_receivable`, `inventory_order_date`, `inventory_order_name`, `inventory_order_address`, `payment_mode`, `inventory_order_status`, `inventory_order_sdt`, `inventory_order_udt`, `inventory_order_edt`) VALUES
-(1, 1, 30000.00, 25000.00, 30000.00, 0.00, '2020-10-13', 'saad', 'islamanad', 'cash', 1, '2020-10-13 16:52:41', '2020-10-13 16:54:40', NULL);
+INSERT INTO `inventory_order` (`inventory_order_id`, `user_id`, `inventory_order_total`, `inventory_order_actual_total`, `order_cash_received`, `inventory_order_cash_receivable`, `inventory_order_date`, `customer_name`, `customer_mobile_no`, `payment_status`, `inventory_order_status`, `inventory_order_sdt`, `inventory_order_udt`, `inventory_order_edt`) VALUES
+(1, 1, 9000.00, 7500.00, 6000.00, 3000.00, '2020-11-12', 'Rehan', '0347513924', 'credit', 2, '2020-11-12 13:38:21', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -135,10 +62,13 @@ CREATE TABLE `inventory_order_product` (
   `inventory_order_product_id` int(11) NOT NULL,
   `inventory_order_id` int(11) NOT NULL,
   `product_id` int(11) NOT NULL,
-  `quantity` int(11) NOT NULL,
-  `base_price` double(10,2) NOT NULL,
+  `weight` float NOT NULL,
+  `base_price` double(10,2) DEFAULT NULL,
   `sale_price` double(10,2) NOT NULL,
+  `product_amount` double(10,2) NOT NULL,
+  `product_profit` double(10,2) DEFAULT 0.00,
   `inventory_order_product_sdt` datetime NOT NULL DEFAULT current_timestamp(),
+  `inventory_order_product_udt` datetime DEFAULT NULL,
   `inventory_order_product_edt` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -146,8 +76,37 @@ CREATE TABLE `inventory_order_product` (
 -- Dumping data for table `inventory_order_product`
 --
 
-INSERT INTO `inventory_order_product` (`inventory_order_product_id`, `inventory_order_id`, `product_id`, `quantity`, `base_price`, `sale_price`, `inventory_order_product_sdt`, `inventory_order_product_edt`) VALUES
-(1, 1, 1, 100, 250.00, 300.00, '2020-10-13 16:52:41', NULL);
+INSERT INTO `inventory_order_product` (`inventory_order_product_id`, `inventory_order_id`, `product_id`, `weight`, `base_price`, `sale_price`, `product_amount`, `product_profit`, `inventory_order_product_sdt`, `inventory_order_product_udt`, `inventory_order_product_edt`) VALUES
+(1, 1, 1, 50, 150.00, 180.00, 9000.00, 1500.00, '2020-11-12 13:38:21', NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `lutbl_month`
+--
+
+CREATE TABLE `lutbl_month` (
+  `month_id` int(11) NOT NULL,
+  `month_name` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `lutbl_month`
+--
+
+INSERT INTO `lutbl_month` (`month_id`, `month_name`) VALUES
+(1, 'January'),
+(2, 'February'),
+(3, 'March'),
+(4, 'April'),
+(5, 'May'),
+(6, 'June'),
+(7, 'July'),
+(8, 'August'),
+(9, 'September'),
+(10, 'October'),
+(11, 'November'),
+(12, 'December');
 
 -- --------------------------------------------------------
 
@@ -157,20 +116,16 @@ INSERT INTO `inventory_order_product` (`inventory_order_product_id`, `inventory_
 
 CREATE TABLE `product` (
   `product_id` int(11) NOT NULL,
-  `category_id` int(11) NOT NULL,
-  `brand_id` int(11) NOT NULL,
   `product_name` varchar(300) NOT NULL,
-  `product_description` text NOT NULL,
-  `product_quantity` int(11) NOT NULL,
-  `product_quantity_remaining` int(11) DEFAULT 0,
-  `product_quantity_sold` int(11) DEFAULT 0,
+  `product_weight_remaining` float DEFAULT NULL,
+  `product_total_weight` int(11) DEFAULT NULL,
+  `product_weight_sold` float DEFAULT 0,
   `product_unit` varchar(150) NOT NULL,
-  `product_base_price` double(10,2) NOT NULL,
-  `product_total_amount` double(10,2) NOT NULL,
-  `product_supplier_name` varchar(50) DEFAULT NULL,
-  `product_supplier_contact_no` varchar(50) DEFAULT NULL,
+  `product_base_price` double(10,2) NOT NULL COMMENT 'Rate',
+  `product_total_cost` double(10,2) DEFAULT NULL,
+  `product_cost_per_kg` float DEFAULT NULL,
   `product_enter_by` int(11) NOT NULL,
-  `product_status` enum('active','inactive') NOT NULL,
+  `product_status` tinyint(4) NOT NULL DEFAULT 1 COMMENT '1:Active, 2:Inactive',
   `product_date` date NOT NULL,
   `product_sdt` datetime NOT NULL DEFAULT current_timestamp(),
   `product_udt` datetime DEFAULT NULL,
@@ -181,33 +136,81 @@ CREATE TABLE `product` (
 -- Dumping data for table `product`
 --
 
-INSERT INTO `product` (`product_id`, `category_id`, `brand_id`, `product_name`, `product_description`, `product_quantity`, `product_quantity_remaining`, `product_quantity_sold`, `product_unit`, `product_base_price`, `product_total_amount`, `product_supplier_name`, `product_supplier_contact_no`, `product_enter_by`, `product_status`, `product_date`, `product_sdt`, `product_udt`, `product_edt`) VALUES
-(1, 1, 1, 'CRC 0.5', 'Zaida roshni zaida khushi', 200, 100, 100, 'Dozens', 250.00, 50000.00, 'noob', '03005001289', 1, 'active', '2020-10-12', '2020-10-12 17:49:20', '2020-10-13 16:52:41', NULL);
+INSERT INTO `product` (`product_id`, `product_name`, `product_weight_remaining`, `product_total_weight`, `product_weight_sold`, `product_unit`, `product_base_price`, `product_total_cost`, `product_cost_per_kg`, `product_enter_by`, `product_status`, `product_date`, `product_sdt`, `product_udt`, `product_edt`) VALUES
+(1, 'Dell Charger 3V', 360, 410, 50, 'Pieces', 150.00, 61500.00, 150, 1, 1, '2020-11-03', '2020-11-12 12:37:11', '2020-11-12 13:38:21', NULL);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tbl_credit_payment_history`
+-- Table structure for table `tbl_ar_ap`
 --
 
-CREATE TABLE `tbl_credit_payment_history` (
-  `history_id` int(11) NOT NULL,
-  `order_id` int(11) NOT NULL,
-  `credit_received` double(10,2) NOT NULL DEFAULT 0.00,
-  `history_status` tinyint(4) NOT NULL DEFAULT 1,
-  `history_sdt` datetime NOT NULL DEFAULT current_timestamp(),
-  `history_udt` datetime DEFAULT NULL
+CREATE TABLE `tbl_ar_ap` (
+  `ar_ap_id` int(11) NOT NULL,
+  `order_id` int(11) DEFAULT NULL,
+  `ar_ap_customer_name` varchar(100) DEFAULT NULL,
+  `ar_ap_description` longtext DEFAULT NULL,
+  `cash_received` double(10,2) NOT NULL DEFAULT 0.00,
+  `remaining_balance` double(10,2) DEFAULT 0.00,
+  `insert_description` varchar(50) DEFAULT NULL,
+  `ar_ap_date` date DEFAULT NULL,
+  `ar_ap_sdt` datetime NOT NULL DEFAULT current_timestamp(),
+  `ar_ap_udt` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Dumping data for table `tbl_credit_payment_history`
+-- Dumping data for table `tbl_ar_ap`
 --
 
-INSERT INTO `tbl_credit_payment_history` (`history_id`, `order_id`, `credit_received`, `history_status`, `history_sdt`, `history_udt`) VALUES
-(1, 1, 5000.00, 1, '2020-10-13 16:53:14', NULL),
-(2, 1, 5000.00, 1, '2020-10-13 16:53:54', NULL),
-(3, 1, 8000.00, 1, '2020-10-13 16:54:15', NULL),
-(4, 1, 2000.00, 1, '2020-10-13 16:54:40', NULL);
+INSERT INTO `tbl_ar_ap` (`ar_ap_id`, `order_id`, `ar_ap_customer_name`, `ar_ap_description`, `cash_received`, `remaining_balance`, `insert_description`, `ar_ap_date`, `ar_ap_sdt`, `ar_ap_udt`) VALUES
+(1, 1, 'Rehan', 'cash', 5000.00, 4000.00, 'Insert', '2020-11-12', '2020-11-12 13:38:21', NULL),
+(2, 1, 'Rehan', 'cash at HBL', 1000.00, 3000.00, 'Update', '2020-11-12', '2020-11-12 13:52:30', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tbl_cash_book`
+--
+
+CREATE TABLE `tbl_cash_book` (
+  `cash_book_id` int(11) NOT NULL,
+  `order_id` int(11) DEFAULT NULL,
+  `cash_amount_received` double(10,2) DEFAULT NULL,
+  `cash_received_from` varchar(250) DEFAULT NULL,
+  `cash_amount_credit` double(10,2) DEFAULT NULL,
+  `cash_amount_credit_to` varchar(50) DEFAULT NULL,
+  `cash_action` tinyint(4) NOT NULL COMMENT '1:Debit, 2:Credit',
+  `cash_received_date` date NOT NULL,
+  `cash_book_status` tinyint(4) NOT NULL DEFAULT 1,
+  `cash_book_sdt` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `tbl_cash_book`
+--
+
+INSERT INTO `tbl_cash_book` (`cash_book_id`, `order_id`, `cash_amount_received`, `cash_received_from`, `cash_amount_credit`, `cash_amount_credit_to`, `cash_action`, `cash_received_date`, `cash_book_status`, `cash_book_sdt`) VALUES
+(1, 1, 5000.00, 'Rehan', NULL, NULL, 1, '2020-11-12', 1, '2020-11-12 13:38:21'),
+(2, 1, 1000.00, 'Rehan', NULL, NULL, 1, '2020-11-12', 1, '2020-11-12 13:52:30');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tbl_expense`
+--
+
+CREATE TABLE `tbl_expense` (
+  `expense_id` int(11) NOT NULL,
+  `expense_name` varchar(50) NOT NULL,
+  `expense_description` longtext NOT NULL,
+  `expense_price` double(10,2) NOT NULL,
+  `expense_date` date NOT NULL,
+  `expense_created_by` int(11) NOT NULL,
+  `expense_status` tinyint(4) NOT NULL DEFAULT 1,
+  `expense_sdt` datetime NOT NULL DEFAULT current_timestamp(),
+  `expense_udt` datetime DEFAULT NULL,
+  `expense_edt` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -229,24 +232,11 @@ CREATE TABLE `user_details` (
 --
 
 INSERT INTO `user_details` (`user_id`, `user_email`, `user_password`, `user_name`, `user_type`, `user_status`) VALUES
-(1, 'abdullah@gmail.com', '$2y$10$pIFQYg2xmWORIntLwKo27OEMHprGW/3ucaRf9YyGfPwIvLOozXliW', 'Abdullah', 'master', 'Active'),
-(2, 'saad@gmail.com', '$2y$10$QXI9wji7mzXByQVPwPrUfuaktxIL6P041qcHJWzPe1L5Am2n00sz2', 'Saad', 'user', 'Active');
+(1, 'abdullah@gmail.com', '$2y$10$pIFQYg2xmWORIntLwKo27OEMHprGW/3ucaRf9YyGfPwIvLOozXliW', 'Abdullah', 'master', 'Active');
 
 --
 -- Indexes for dumped tables
 --
-
---
--- Indexes for table `brand`
---
-ALTER TABLE `brand`
-  ADD PRIMARY KEY (`brand_id`);
-
---
--- Indexes for table `category`
---
-ALTER TABLE `category`
-  ADD PRIMARY KEY (`category_id`);
 
 --
 -- Indexes for table `inventory_order`
@@ -261,16 +251,34 @@ ALTER TABLE `inventory_order_product`
   ADD PRIMARY KEY (`inventory_order_product_id`);
 
 --
+-- Indexes for table `lutbl_month`
+--
+ALTER TABLE `lutbl_month`
+  ADD PRIMARY KEY (`month_id`);
+
+--
 -- Indexes for table `product`
 --
 ALTER TABLE `product`
   ADD PRIMARY KEY (`product_id`);
 
 --
--- Indexes for table `tbl_credit_payment_history`
+-- Indexes for table `tbl_ar_ap`
 --
-ALTER TABLE `tbl_credit_payment_history`
-  ADD PRIMARY KEY (`history_id`);
+ALTER TABLE `tbl_ar_ap`
+  ADD PRIMARY KEY (`ar_ap_id`);
+
+--
+-- Indexes for table `tbl_cash_book`
+--
+ALTER TABLE `tbl_cash_book`
+  ADD PRIMARY KEY (`cash_book_id`);
+
+--
+-- Indexes for table `tbl_expense`
+--
+ALTER TABLE `tbl_expense`
+  ADD PRIMARY KEY (`expense_id`);
 
 --
 -- Indexes for table `user_details`
@@ -281,18 +289,6 @@ ALTER TABLE `user_details`
 --
 -- AUTO_INCREMENT for dumped tables
 --
-
---
--- AUTO_INCREMENT for table `brand`
---
-ALTER TABLE `brand`
-  MODIFY `brand_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
-
---
--- AUTO_INCREMENT for table `category`
---
-ALTER TABLE `category`
-  MODIFY `category_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `inventory_order`
@@ -307,16 +303,34 @@ ALTER TABLE `inventory_order_product`
   MODIFY `inventory_order_product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
+-- AUTO_INCREMENT for table `lutbl_month`
+--
+ALTER TABLE `lutbl_month`
+  MODIFY `month_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+
+--
 -- AUTO_INCREMENT for table `product`
 --
 ALTER TABLE `product`
   MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT for table `tbl_credit_payment_history`
+-- AUTO_INCREMENT for table `tbl_ar_ap`
 --
-ALTER TABLE `tbl_credit_payment_history`
-  MODIFY `history_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+ALTER TABLE `tbl_ar_ap`
+  MODIFY `ar_ap_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `tbl_cash_book`
+--
+ALTER TABLE `tbl_cash_book`
+  MODIFY `cash_book_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `tbl_expense`
+--
+ALTER TABLE `tbl_expense`
+  MODIFY `expense_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `user_details`

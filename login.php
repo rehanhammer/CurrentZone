@@ -60,7 +60,7 @@ if(isset($_POST["login"]))
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>CurrentZone Management System</title>		
+		<title>Current Zone Management System</title>		
 		<script src="js/jquery-1.10.2.min.js"></script>
 		<link rel="stylesheet" href="css/bootstrap.min.css" />
 		<script src="js/bootstrap.min.js"></script>
@@ -68,12 +68,12 @@ if(isset($_POST["login"]))
 	<body>
 		<br />
 		<div class="container">
-			<h2 align="center">CurrentZone Management System</h2>
+			<h2 align="center">Current Zone Management System</h2>
 			<br />
 			<div class="panel panel-default">
 				<div class="panel-heading">Login</div>
 				<div class="panel-body">
-					<form method="post">
+					<form method="post" autocomplete="off">
 						<?php echo $message; ?>
 						<div class="form-group">
 							<label>User Email</label>
@@ -92,3 +92,6 @@ if(isset($_POST["login"]))
 		</div>
 	</body>
 </html>
+<?php
+include('footer.php');
+?>

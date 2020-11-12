@@ -9,19 +9,13 @@ $query = '';
 
 $output = array();
 $query .= "
-	SELECT * FROM product 
-INNER JOIN brand ON brand.brand_id = product.brand_id
-INNER JOIN category ON category.category_id = product.category_id 
-INNER JOIN user_details ON user_details.user_id = product.product_enter_by 
+	SELECT * FROM product
+	LEFT JOIN user_details ON user_details.user_id = product.product_enter_by
 ";
-
 if(isset($_POST["search"]["value"]))
 {
-	$query .= 'WHERE brand.brand_name LIKE "%'.$_POST["search"]["value"].'%" ';
-	$query .= 'OR category.category_name LIKE "%'.$_POST["search"]["value"].'%" ';
-	$query .= 'OR product.product_name LIKE "%'.$_POST["search"]["value"].'%" ';
-	$query .= 'OR product.product_quantity LIKE "%'.$_POST["search"]["value"].'%" ';
-	$query .= 'OR product.product_supplier_name LIKE "%'.$_POST["search"]["value"].'%" ';
+	$query .= 'WHERE product.product_name LIKE "%'.$_POST["search"]["value"].'%" ';
+	$query .= 'OR product.product_weight_remaining LIKE "%'.$_POST["search"]["value"].'%" ';
 	$query .= 'OR user_details.user_name LIKE "%'.$_POST["search"]["value"].'%" ';
 	$query .= 'OR product.product_id LIKE "%'.$_POST["search"]["value"].'%" ';
 }
@@ -39,6 +33,7 @@ if($_POST['length'] != -1)
 {
 	$query .= 'LIMIT ' . $_POST['start'] . ', ' . $_POST['length'];
 }
+
 $statement = $connect->prepare($query);
 $statement->execute();
 $result = $statement->fetchAll();
@@ -47,7 +42,13 @@ $filtered_rows = $statement->rowCount();
 foreach($result as $row)
 {
 	$status = '';
-	if($row['product_status'] == 'active')
+	$check_status = 1;
+
+	$available_weight = $row['product_total_weight'] - $row['product_weight_sold'];//available_product_quantity($connect, $row["product_id"]) . ' ' . $row["product_unit"];
+	if($available_weight == 0)
+		$check_status = update_product_status($connect, $row['product_id']);
+
+	if($check_status == '1')
 	{
 		$status = '<span class="label label-success">Active</span>';
 	}
@@ -55,14 +56,14 @@ foreach($result as $row)
 	{
 		$status = '<span class="label label-danger">Inactive</span>';
 	}
+	
 	$sub_array = array();
 	$sub_array[] = $row['product_id'];
-	$sub_array[] = $row['category_name'];
-	$sub_array[] = $row['brand_name'];
 	$sub_array[] = $row['product_name'];
-	$sub_array[] = $row['product_quantity_remaining']." ".$row['product_unit'];//available_product_quantity($connect, $row["product_id"]) . ' ' . $row["product_unit"];
-	$sub_array[] = $row['product_quantity_sold']." ".$row['product_unit'];
-	$sub_array[] = $row['product_supplier_name'];
+	$sub_array[] = $row['product_total_weight']. " ". $row["product_unit"];
+	$sub_array[] = $available_weight . " " . $row["product_unit"];
+	$sub_array[] = $row['product_weight_sold'] . " ". $row["product_unit"]; //- $available_weight;
+	$sub_array[] = $row['product_date'];
 	$sub_array[] = $row['user_name'];
 	$sub_array[] = $status;
 	$sub_array[] = '<button type="button" name="view" id="'.$row["product_id"].'" class="btn btn-info btn-xs view">View</button>';
